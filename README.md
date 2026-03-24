@@ -9,12 +9,14 @@ Un chatbot funcional construido desde cero con HTML, CSS y JavaScript, integrado
 - Indicador de "Escribiendo..." mientras procesa la respuesta
 - Soporte para enviar mensajes con Enter o con el botón
 
+
 ## Tecnologías usadas
 
 - HTML5
 - CSS3
 - JavaScript
-- API de Groq (LLaMA 3)
+- Groq API (plataforma de inferencia)
+- LLaMA 3.1 8B de Meta (modelo de lenguaje)
 
 ## Autor
 
