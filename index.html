@@ -27,9 +27,18 @@
             padding: 20px;
         }
 
+        #navbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 16px;
+        }
+
         h1 {
             color: #e0e0e0;
-            margin-bottom: 20px;
+            font-size: 20px;
             font-family: 'Roboto Flex', sans-serif;
         }
 
@@ -42,6 +51,8 @@
             padding: 20px;
             overflow-y: auto;
             margin-bottom: 16px;
+            scroll-behavior: smooth;
+
         }
 
         #entrada {
@@ -140,19 +151,114 @@
         .burbuja-bot {
             animation: aparecer-izquierda 0.6s ease-out;
         }
+
+        #logo {
+            font-size: 32px;
+        }
+
+        #fondo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .aurora {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            animation: aurora 8s infinite alternate ease-in-out;
+            opacity: 0.15;
+            filter: blur(60px);
+            border-radius: 50%;
+        }
+
+        .aurora:nth-child(1) {
+            background: radial-gradient(ellipse, #00ffcc, transparent 60%);
+            animation-duration: 9s;
+            animation-delay: 0s;
+        }
+
+        .aurora:nth-child(2) {
+            background: radial-gradient(ellipse, #7b2fff, transparent 60%);
+            animation-duration: 11s;
+            animation-delay: 2s;
+        }
+
+        .aurora:nth-child(3) {
+            background: radial-gradient(ellipse, #00aaff, transparent 60%);
+            animation-duration: 7s;
+            animation-delay: 1s;
+        }
+
+        .aurora:nth-child(4) {
+            background: radial-gradient(ellipse, #ff00aa, transparent 60%);
+            animation-duration: 13s;
+            animation-delay: 3s;
+        }
+
+        @keyframes aurora {
+            0% {
+                transform: translate(0%, 0%) rotate(0deg) scale(1);
+            }
+
+            25% {
+                transform: translate(10%, -10%) rotate(45deg) scale(1.2);
+            }
+
+            50% {
+                transform: translate(-10%, 10%) rotate(90deg) scale(0.9);
+            }
+
+            75% {
+                transform: translate(15%, 5%) rotate(135deg) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-5%, -15%) rotate(180deg) scale(1.3);
+            }
+        }
+
+        #chat::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background-color: #6e6e6e;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>Mi Chatbot</h1>
+    <div id="fondo">
+        <div class="aurora"></div>
+        <div class="aurora"></div>
+        <div class="aurora"></div>
+        <div class="aurora"></div>
+    </div>
+
+    <div id="navbar">
+        <span id="logo">🤖</span>
+        <h1>Mi Chatbot</h1>
+    </div>
 
     <div id="chat">
         <div id="mensajes"></div>
     </div>
 
     <div id="entrada">
-        <input type="text" id="campo-texto" placeholder="Escribe tu mensaje..." />
+        <input type="text" id="campo-texto" placeholder="Escribe tu mensaje..." autocapitalize="sentences" />
         <button id="boton-enviar">Enviar</button>
     </div>
 
@@ -160,11 +266,17 @@
         const boton = document.getElementById("boton-enviar");
         const campo = document.getElementById("campo-texto");
         const mensajes = document.getElementById("mensajes");
-        const API_KEY = "TU_API_KEY_AQUI";
+        const chat = document.getElementById("chat");
+        const API_KEY = "TU-API-KEY-AQUI";
 
         campo.addEventListener("keydown", function (evento) {
             if (evento.key === "Enter") {
                 boton.click();
+            }
+        });
+        campo.addEventListener("input", function () {
+            if (campo.value.length === 1) {
+                campo.value = campo.value.toUpperCase();
             }
         });
 
@@ -174,6 +286,7 @@
 
             agregarMensajeUsuario(texto);
             campo.value = "";
+            mensajes.scrollTop = mensajes.scrollHeight;
 
             await new Promise(resolve => setTimeout(resolve, 600));
             agregarMensajeCargando();
@@ -184,7 +297,9 @@
             quitarMensajeCargando();
 
             await new Promise(resolve => setTimeout(resolve, 300));
+
             agregarMensajeBot(respuesta);
+            mensajes.scrollTop = mensajes.scrollHeight;
         });
 
         function agregarMensajeUsuario(texto) {
@@ -197,8 +312,22 @@
 
             contenedor.appendChild(burbuja);
             mensajes.appendChild(contenedor);
-            mensajes.scrollTop = mensajes.scrollHeight;
+            chat.scrollTop = 99999;
         }
+
+        function agregarMensajeBot(texto) {
+            const contenedor = document.createElement("div");
+            contenedor.classList.add("mensaje-bot");
+
+            const burbuja = document.createElement("div");
+            burbuja.classList.add("burbuja-bot");
+            burbuja.textContent = texto;
+
+            contenedor.appendChild(burbuja);
+            mensajes.appendChild(contenedor);
+            chat.scrollTop = 99999;
+        }
+
 
         function agregarMensajeCargando() {
             const contenedor = document.createElement("div");
@@ -217,19 +346,6 @@
         function quitarMensajeCargando() {
             const cargando = document.getElementById("mensaje-cargando");
             if (cargando) cargando.remove();
-        }
-
-        function agregarMensajeBot(texto) {
-            const contenedor = document.createElement("div");
-            contenedor.classList.add("mensaje-bot");
-
-            const burbuja = document.createElement("div");
-            burbuja.classList.add("burbuja-bot");
-            burbuja.textContent = texto;
-
-            contenedor.appendChild(burbuja);
-            mensajes.appendChild(contenedor);
-            mensajes.scrollTop = mensajes.scrollHeight;
         }
 
         async function preguntarAGroq(texto) {
