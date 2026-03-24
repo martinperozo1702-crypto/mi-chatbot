@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght,XOPQ,XTRA,YOPQ,YTDE,YTFI,YTLC,YTUC@8..144,100..1000,96,468,79,-203,738,514,712&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #041014;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            font-family: 'Roboto Flex', sans-serif;
+        }
+
+        #chat {
+            background-color: #145369;
+            width: 100%;
+            max-width: 600px;
+            height: 70vh;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        #entrada {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+            gap: 8px;
+        }
+
+        #campo-texto {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #0b2d39;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        #boton-enviar {
+            padding: 12px 20px;
+            background-color: #0f3460;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #boton-enviar:hover {
+            background-color: #533483;
+        }
+
+        .mensaje-usuario {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .burbuja-usuario {
+            background-color: #0f3460;
+            color: #e0e0e0;
+            padding: 10px 16px;
+            border-radius: 18px 18px 0px 18px;
+            max-width: 70%;
+            font-size: 15px;
+            line-height: 1.4;
+            animation: aparecer-derecha 0.3s ease-out;
+        }
+
+        .mensaje-bot {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .burbuja-bot {
+            background-color: #07346c;
+            color: #e0e0e0;
+            padding: 10px 16px;
+            border-radius: 18px 18px 18px 0px;
+            max-width: 70%;
+            font-size: 15px;
+            line-height: 1.4;
+            animation: aparecer-izquierda 0.3s ease-out;
+        }
+
+        @keyframes aparecer-derecha {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes aparecer-izquierda {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .burbuja-usuario {
+            animation: aparecer-derecha 0.6s ease-out;
+        }
+
+        .burbuja-bot {
+            animation: aparecer-izquierda 0.6s ease-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Mi Chatbot</h1>
+
+    <div id="chat">
+        <div id="mensajes"></div>
+    </div>
+
+    <div id="entrada">
+        <input type="text" id="campo-texto" placeholder="Escribe tu mensaje..." />
+        <button id="boton-enviar">Enviar</button>
+    </div>
+
+    <script>
+        const boton = document.getElementById("boton-enviar");
+        const campo = document.getElementById("campo-texto");
+        const mensajes = document.getElementById("mensajes");
+        const API_KEY = "TU_API_KEY_AQUI";
+
+        campo.addEventListener("keydown", function (evento) {
+            if (evento.key === "Enter") {
+                boton.click();
+            }
+        });
+
+        boton.addEventListener("click", async function () {
+            const texto = campo.value;
+            if (texto === "") return;
+
+            agregarMensajeUsuario(texto);
+            campo.value = "";
+
+            await new Promise(resolve => setTimeout(resolve, 600));
+            agregarMensajeCargando();
+
+            const respuesta = await preguntarAGroq(texto);
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+            quitarMensajeCargando();
+
+            await new Promise(resolve => setTimeout(resolve, 300));
+            agregarMensajeBot(respuesta);
+        });
+
+        function agregarMensajeUsuario(texto) {
+            const contenedor = document.createElement("div");
+            contenedor.classList.add("mensaje-usuario");
+
+            const burbuja = document.createElement("div");
+            burbuja.classList.add("burbuja-usuario");
+            burbuja.textContent = texto;
+
+            contenedor.appendChild(burbuja);
+            mensajes.appendChild(contenedor);
+            mensajes.scrollTop = mensajes.scrollHeight;
+        }
+
+        function agregarMensajeCargando() {
+            const contenedor = document.createElement("div");
+            contenedor.classList.add("mensaje-bot");
+            contenedor.id = "mensaje-cargando";
+
+            const burbuja = document.createElement("div");
+            burbuja.classList.add("burbuja-bot");
+            burbuja.textContent = "Escribiendo...";
+
+            contenedor.appendChild(burbuja);
+            mensajes.appendChild(contenedor);
+            mensajes.scrollTop = mensajes.scrollHeight;
+        }
+
+        function quitarMensajeCargando() {
+            const cargando = document.getElementById("mensaje-cargando");
+            if (cargando) cargando.remove();
+        }
+
+        function agregarMensajeBot(texto) {
+            const contenedor = document.createElement("div");
+            contenedor.classList.add("mensaje-bot");
+
+            const burbuja = document.createElement("div");
+            burbuja.classList.add("burbuja-bot");
+            burbuja.textContent = texto;
+
+            contenedor.appendChild(burbuja);
+            mensajes.appendChild(contenedor);
+            mensajes.scrollTop = mensajes.scrollHeight;
+        }
+
+        async function preguntarAGroq(texto) {
+            try {
+                const respuesta = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + API_KEY
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.1-8b-instant",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "Eres un asistente llamado Nova. Eres amable, conciso y respondes siempre en español. Si te preguntan quién eres, dices que eres Nova, un asistente creado por un desarrollador colombiano."
+                            },
+                            { role: "user", content: texto }
+                        ]
+                    })
+                });
+
+                const data = await respuesta.json();
+
+                if (data.choices && data.choices[0]) {
+                    return data.choices[0].message.content;
+                } else {
+                    return "Hubo un problema al obtener la respuesta. Intenta de nuevo.";
+                }
+
+            } catch (error) {
+                return "Error de conexión. Verifica tu internet e intenta de nuevo.";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
