@@ -236,6 +236,23 @@
             background-color: #6e6e6e;
             border-radius: 10px;
         }
+
+        #boton-limpiar {
+            margin-left: auto;
+            padding: 8px 14px;
+            background-color: transparent;
+            color: #e0e0e0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        #boton-limpiar:hover {
+            background-color: #e0e0e0;
+            color: #041014;
+        }
     </style>
 </head>
 
@@ -251,6 +268,7 @@
     <div id="navbar">
         <span id="logo">🤖</span>
         <h1>Mi Chatbot</h1>
+        <button id="boton-limpiar">🗑️ Nueva conversación</button>
     </div>
 
     <div id="chat">
@@ -268,6 +286,11 @@
         const mensajes = document.getElementById("mensajes");
         const chat = document.getElementById("chat");
         const API_KEY = "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";
+        const botonLimpiar = document.getElementById("boton-limpiar");
+
+        botonLimpiar.addEventListener("click", function () {
+            mensajes.innerHTML = "";
+        });
 
         campo.addEventListener("keydown", function (evento) {
             if (evento.key === "Enter") {
