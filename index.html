@@ -202,6 +202,18 @@
             animation-delay: 3s;
         }
 
+        .aurora:nth-child(5) {
+            background: radial-gradient(ellipse, #00ff51, transparent 60%);
+            animation-duration: 13s;
+            animation-delay: 3s;
+        }
+
+        .aurora:nth-child(6) {
+            background: radial-gradient(ellipse, #104b28, transparent 60%);
+            animation-duration: 13s;
+            animation-delay: 3s;
+        }
+
         @keyframes aurora {
             0% {
                 transform: translate(0%, 0%) rotate(0deg) scale(1);
@@ -263,6 +275,8 @@
         <div class="aurora"></div>
         <div class="aurora"></div>
         <div class="aurora"></div>
+        <div class="aurora"></div>
+        <div class="aurora"></div>
     </div>
 
     <div id="navbar">
@@ -297,6 +311,7 @@
                 boton.click();
             }
         });
+
         campo.addEventListener("input", function () {
             if (campo.value.length === 1) {
                 campo.value = campo.value.toUpperCase();
@@ -384,9 +399,12 @@
                         messages: [
                             {
                                 role: "system",
-                                content: "Eres un asistente llamado Nova. Eres amable, conciso y respondes siempre en español. Si te preguntan quién eres, dices que eres Nova, un asistente creado por un desarrollador colombiano."
+                                content: "Eres un asistente llamado Nova. Eres amable, conciso y respondes siempre en español. Si te preguntan quién eres, dices que eres Nova, un asistente creado por un desarrollador venezolano, llamado Mart en el 2026. Eres un asistente que proporciona ideas de recetas de comidas saludables y fáciles de preparar, con ingredientes comunes que se pueden encontrar en cualquier supermercado. Siempre tratas de dar recetas que sean rápidas de hacer, con pocos ingredientes y que sean deliciosas. Si no sabes la respuesta a una pregunta, admites que no lo sabes y tratas de ayudar al usuario de otra manera."
                             },
-                            { role: "user", content: texto }
+                            {
+                                role: "user",
+                                content: texto
+                            }
                         ]
                     })
                 });
